@@ -56,6 +56,94 @@ int FUN_7ff77f57d804(void *param_1)
 
 ```
 
+```c++
+
+	static bool ProcessObjIntern(void* startObj)
+	{
+		using longlong = DWORD64;
+		longlong obj = (longlong)startObj;
+		longlong* nextObj = 0;
+		longlong lastNextObj = 0;
+		void** next_obj_ptr;
+		int same = 0;
+
+		while (true)
+		{
+			if (obj == 0) { break; }
+			longlong attachmentInfo = *(longlong*)(obj + 0x50);
+
+			if (attachmentInfo == 0) {
+				return false;
+			}
+			else
+			{
+				nextObj = *(longlong**)(attachmentInfo + 0x48);
+
+				
+			}
+
+			
+			if (attachmentInfo == 0) {
+				next_obj_ptr = (void**)0x0;
+			}
+			else {
+				next_obj_ptr = *(void***)(attachmentInfo + 0x48);
+			}
+			if ((next_obj_ptr == (void**)0x0) ||
+				((* (byte*)((longlong)next_obj_ptr + 0x5c) & 0xf) < 2)) {
+				obj = (longlong)0x0;
+			}
+			else {
+				obj = (longlong)*next_obj_ptr;
+
+				if (obj == lastNextObj)
+				{
+					
+
+
+					return true;
+				}
+
+				lastNextObj = obj;
+			}
+
+		}
+
+		return false;
+		
+
+	}
+
+	
+
+	static PVOID ProcessObjsOrig = 0;
+	static bool ProcessObjs(void* obj_1, void* obj_2)
+	{
+		__try
+		{
+			{
+				if (ProcessObjIntern(obj_1) == true)
+				{
+					return false;
+				}
+				if (ProcessObjIntern(obj_2) == true)
+				{
+					return false;
+				}
+			}
+
+			
+		}
+		__except (EXCEPTION_EXECUTE_HANDLER)
+		{
+			g_Logger->Info("EXCP!");
+			return false;
+		}
+
+		return static_cast<decltype(&ProcessObjs)>(ProcessObjsOrig)(obj_1, obj_2);
+	}
+  ```
+
 
 ## Host Crash
 As above i will not go into detail how it works
